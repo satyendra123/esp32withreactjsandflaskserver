@@ -1,6 +1,6 @@
 //Note: a) http://192.168.1.23:3000/api/sensordata i have used my system ip in this, 
         b) flask server is running with the same port in which esp32 is running. and the ip is 0.0.0.0 means it accepts any ip with the port 3000. so data will be received.
-        c) 
+        c) my react js is always running on port 3000 but this time we can not use it with the port 3000. so we need to change the port of the react js http://localhost:3001/
 
 
 //esp32 code
