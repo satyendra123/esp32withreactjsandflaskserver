@@ -1,1 +1,114 @@
+//EXAMPLE-1 ESP32 code which sends the data
+#include <WiFi.h>
+#include <HTTPClient.h>
 
+const char* ssid = "Airtel_tejv_3002";  // WiFi SSID
+const char* password = "air73137";      // WiFi password
+
+void setup() {
+  Serial.begin(115200);
+
+  // Connect to WiFi
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting to WiFi");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println();
+  Serial.println("Connected to WiFi");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  // Simulate reading sensor data
+  int voltage = random(0, 12);
+  int current = random(0, 3);
+  int watt = random(28, 32);
+  int average = random(50, 95);
+
+  // Create JSON data
+  String postData = "{\"voltage\":" + String(voltage) + ",\"current\":" + String(current) + ",\"watt\":" + String(watt) + ",\"average\":" + String(average) + "}";
+
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String serverPath = "http://192.168.1.23:3000/api/sensordata";  // Replace with the correct IP address and port
+
+    // Log the endpoint and data
+    Serial.println("Posting to: " + serverPath);
+    Serial.println("PostPacket: " + postData);
+    
+    http.begin(serverPath);
+    http.addHeader("Content-Type", "application/json");  // Changed to application/json
+
+    int httpResponseCode = http.POST(postData);
+
+    // Print HTTP response code and payload
+    Serial.print("httpCode: ");
+    Serial.println(httpResponseCode);
+
+    if (httpResponseCode > 0 && httpResponseCode < 400) {
+      String response = http.getString();
+      Serial.println(response);
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi Disconnected");
+  }
+
+  delay(10000);  // Send data every 10 seconds
+}
+
+//EXAMPLE-2 python django backened
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//EXAMPLE-3 React js fronted code
+// a)
