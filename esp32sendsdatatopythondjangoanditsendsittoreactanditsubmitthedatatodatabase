@@ -1,0 +1,346 @@
+//EXAMPLE-1 Esp32 code
+#include <WiFi.h>
+#include <HTTPClient.h>
+
+const char* ssid = "Airtel_tejv_3002";  // WiFi SSID
+const char* password = "air73137";      // WiFi password
+
+void setup() {
+  Serial.begin(115200);
+
+  // Connect to WiFi
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting to WiFi");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println();
+  Serial.println("Connected to WiFi");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop() {
+  // Simulate reading sensor data
+  int voltage = random(0, 12);
+  int current = random(0, 3);
+  int watt = random(28, 32);
+  int average = random(50, 95);
+
+  // Create JSON data
+  String postData = "{\"voltage\":" + String(voltage) + ",\"current\":" + String(current) + ",\"watt\":" + String(watt) + ",\"average\":" + String(average) + "}";
+
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String serverPath = "http://192.168.1.23:3000/api/sensordata";  // Replace with the correct IP address and port
+
+    // Log the endpoint and data
+    Serial.println("Posting to: " + serverPath);
+    Serial.println("PostPacket: " + postData);
+    
+    http.begin(serverPath);
+    http.addHeader("Content-Type", "application/json");  // Changed to application/json
+
+    int httpResponseCode = http.POST(postData);
+
+    // Print HTTP response code and payload
+    Serial.print("httpCode: ");
+    Serial.println(httpResponseCode);
+
+    if (httpResponseCode > 0 && httpResponseCode < 400) {
+      String response = http.getString();
+      Serial.println(response);
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi Disconnected");
+  }
+
+  delay(10000);  // Send data every 10 seconds
+}
+
+//EXAMPLE-2 react js code 
+//a) Esp32form.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './Esp32form.css';
+
+const Esp32form = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    age: '',
+    rollNumber: '',
+    class: '',
+    voltage: '',
+    current: '',
+    watt: '',
+    average: ''
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://192.168.1.23:3000/api/sensordata/latest');
+        const { voltage, current, watt, average } = response.data;
+        setFormData(prevState => ({
+          ...prevState,
+          voltage,
+          current,
+          watt,
+          average
+        }));
+      } catch (error) {
+        console.error('Error fetching sensor data', error);
+      }
+    };
+
+    fetchData();
+    const intervalId = setInterval(fetchData, 10000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post('http://localhost:8000/api/submit-form/', formData)
+      .then(response => {
+        console.log('Data submitted successfully', response);
+      })
+      .catch(error => {
+        console.error('Error submitting data', error);
+      });
+  };
+
+  return (
+    <div className="form-container">
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="name">Name</label>
+        <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Name" required />
+
+        <label htmlFor="age">Age</label>
+        <input type="number" id="age" name="age" value={formData.age} onChange={handleChange} placeholder="Age" required />
+
+        <label htmlFor="rollNumber">Roll Number</label>
+        <input type="text" id="rollNumber" name="rollNumber" value={formData.rollNumber} onChange={handleChange} placeholder="Roll Number" required />
+
+        <label htmlFor="class">Class</label>
+        <input type="text" id="class" name="class" value={formData.class} onChange={handleChange} placeholder="Class" required />
+
+        <label htmlFor="voltage">Voltage</label>
+        <input type="text" id="voltage" name="voltage" value={formData.voltage} onChange={handleChange} placeholder="Voltage" readOnly />
+
+        <label htmlFor="current">Current</label>
+        <input type="text" id="current" name="current" value={formData.current} onChange={handleChange} placeholder="Current" readOnly />
+
+        <label htmlFor="watt">Watt</label>
+        <input type="text" id="watt" name="watt" value={formData.watt} onChange={handleChange} placeholder="Watt" readOnly />
+
+        <label htmlFor="average">Average</label>
+        <input type="text" id="average" name="average" value={formData.average} onChange={handleChange} placeholder="Average" readOnly />
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+};
+
+export default Esp32form;
+
+//b) Footer.js
+import React from 'react'
+function Footer() {
+  return (
+
+    <div className="container-fluid">
+        <footer style={{
+            backgroundColor:'#03011C',
+            padding:100,
+            display:'flex',
+            justifyContent:'space-between',
+        }}>
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Code school</h2>
+                <p style={{color:'white', width:'400px'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. dummy text of the printing and typesetting industry. </p>
+            </div>
+        
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Usefull links</h2>
+                <ul style={{color:'white', 
+                listStyle:'none',
+                padding:0, 
+                margin:0,
+                display:'flex',
+                flexDirection:'column',
+                gap:'8px'
+
+                }}>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Home</a></li>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Number</a></li>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Whatsapp</a></li>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Contact us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Code school</h2>
+                <p style={{color:'white', width:'200px'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+            </div>
+
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Code school</h2>
+                <p style={{color:'white', width:'200px'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+            </div>
+
+       </footer>
+</div>
+  )
+}
+
+export default Footer
+
+//c) Nav.js
+import React from 'react'
+import './Nav.css'
+
+function Nav() {
+  return (
+    <nav style={{
+      backgroundColor: 'white',
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: '0 48px',
+      boxShadow: '0 16px 8px 0 rgba(0,0,0,0.1)'
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+      }}>
+        <img src="./images/logo.jpeg" alt="Logo" width="60" />
+        <a href="#" style={{
+          textDecoration: 'none',
+          color:'#323232',
+          margin:'10px',
+        }}><h1>Houston System</h1></a>
+      </div>
+
+      <ul style={{
+        display: 'flex',
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+        gap: '10px',
+        alignItems: 'center'
+      }}>
+        <li style={{ display: 'flex', alignItems: 'center',padding:'16px 24px'  }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Home</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center',padding:'16px 24px'  }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Teachers</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center',padding:'16px 24px'  }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Holiday</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center' ,padding:'16px 24px' }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Login</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center', padding:'16px 24px' }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: 'white',
+            fontSize:17,
+            background:'dodgerblue',
+            padding:'16px 48px',
+            borderRadius:4,
+
+          }}>Talk to us</a>
+        </li>
+      </ul>
+    </nav>
+  )
+}
+
+export default Nav
+
+//d) Section.js
+// TypingComponent.js
+import React from 'react';
+import { TypeAnimation } from 'react-type-animation';
+
+const Section = () => {
+  return (
+    <div>
+      <h1>Typing Animation Example</h1>
+      <TypeAnimation
+        sequence={[
+          'Hello, world!', // Types 'Hello, world!'
+          1000, // Waits 1s
+          'Hello, React!', // Deletes 'Hello, world!' and types 'Hello, React!'
+          1000, // Waits 1s
+          'Hello, Type Animation!', // Deletes 'Hello, React!' and types 'Hello, Type Animation!'
+          1000, // Waits 1s
+          'Goodbye!', // Deletes 'Hello, Type Animation!' and types 'Goodbye!'
+          1000, // Waits 1s
+        ]}
+        wrapper="span"
+        cursor={true}
+        repeat={Infinity}
+      />
+    </div>
+  );
+};
+
+export default Section;
+
+//e) index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import Nav from './Components/Nav';
+import reportWebVitals from './reportWebVitals';
+import Footer from './Components/Footer';
+import Esp32form from './Components/Esp32form';
+import Section from './Components/Section';
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App/>
+    <Nav/>
+    <Esp32form/>
+    <Section/>
+    <Footer/>
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+//EXAMPLE-3 python django code
+
+
