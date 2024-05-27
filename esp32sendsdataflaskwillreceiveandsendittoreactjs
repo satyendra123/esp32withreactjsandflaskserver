@@ -1,3 +1,8 @@
+//Note: a) http://192.168.1.23:3000/api/sensordata i have used my system ip in this, 
+        b) flask server is running with the same port in which esp32 is running. and the ip is 0.0.0.0 means it accepts any ip with the port 3000. so data will be received.
+        c) 
+
+
 //esp32 code
 #include <WiFi.h>
 #include <HTTPClient.h>
@@ -103,6 +108,7 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)
 
 //EXAMPLE-3 react js fronted code to receive and display the data from the flask server backened to react js fronted.
+//a) Esp32form.js
 import React, { useState, useEffect } from 'react';
 const Esp32form= () => {
   const [sensorData, setSensorData] = useState(null);
@@ -152,7 +158,7 @@ return (
 
 export default Esp32form;
 
-//Nav.js
+//b) Nav.js
 import React from 'react'
 import './Nav.css'
 
@@ -228,7 +234,7 @@ function Nav() {
 
 export default Nav
 
-//Footer.js
+//c) Footer.js
 import React from 'react'
 function Footer() {
   return (
@@ -280,7 +286,7 @@ function Footer() {
 
 export default Footer
 
-//index.js
+//d) index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
@@ -304,3 +310,32 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+//e) Section.js
+import React from 'react';
+import { TypeAnimation } from 'react-type-animation';
+
+const Section = () => {
+  return (
+    <div>
+      <h1>Typing Animation Example</h1>
+      <TypeAnimation
+        sequence={[
+          'Hello, world!', // Types 'Hello, world!'
+          1000, // Waits 1s
+          'Hello, React!', // Deletes 'Hello, world!' and types 'Hello, React!'
+          1000, // Waits 1s
+          'Hello, Type Animation!', // Deletes 'Hello, React!' and types 'Hello, Type Animation!'
+          1000, // Waits 1s
+          'Goodbye!', // Deletes 'Hello, Type Animation!' and types 'Goodbye!'
+          1000, // Waits 1s
+        ]}
+        wrapper="span"
+        cursor={true}
+        repeat={Infinity}
+      />
+    </div>
+  );
+};
+
+export default Section;
