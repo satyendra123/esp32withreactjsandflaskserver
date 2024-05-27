@@ -65,6 +65,7 @@ void loop() {
 
 //EXAMPLE-2 react js code 
 //a) Esp32form.js
+//EXAMPLE-1 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Esp32form.css';
@@ -111,15 +112,15 @@ const Esp32form = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios.post('http://localhost:8000/api/submit-form/', formData)
-      .then(response => {
-        console.log('Data submitted successfully', response);
-      })
-      .catch(error => {
-        console.error('Error submitting data', error);
-      });
+    console.log('Submitting form data:', formData); // Add this line
+    try {
+      const response = await axios.post('http://192.168.1.23:3000/api/submit-form', formData);
+      console.log('Data submitted successfully', response);
+    } catch (error) {
+      console.error('Error submitting data', error);
+    }
   };
 
   return (
@@ -135,7 +136,7 @@ const Esp32form = () => {
         <input type="text" id="rollNumber" name="rollNumber" value={formData.rollNumber} onChange={handleChange} placeholder="Roll Number" required />
 
         <label htmlFor="class">Class</label>
-        <input type="text" id="class" name="class" value={formData.class} onChange={handleChange} placeholder="Class" required />
+        <input type="text" id="class" name="Class" value={formData.Class} onChange={handleChange} placeholder="Class" required />
 
         <label htmlFor="voltage">Voltage</label>
         <input type="text" id="voltage" name="voltage" value={formData.voltage} onChange={handleChange} placeholder="Voltage" readOnly />
