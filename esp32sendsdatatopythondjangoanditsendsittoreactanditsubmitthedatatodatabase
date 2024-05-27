@@ -343,5 +343,86 @@ root.render(
 reportWebVitals();
 
 //EXAMPLE-3 python django code
+//a) views.py
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import SensorData
+from .serializers import SensorDataSerializer
+
+# In-memory store for the latest sensor data
+latest_sensor_data = None
+
+@api_view(['POST'])
+def receive_sensor_data(request):
+    global latest_sensor_data
+    data = request.data
+    print("Received data:", data)  # Debugging line
+    latest_sensor_data = data
+    return JsonResponse({"status": "success"}, status=201)
+
+@api_view(['GET'])
+def get_latest_sensor_data(request):
+    global latest_sensor_data
+    if latest_sensor_data is not None:
+        return JsonResponse(latest_sensor_data, status=200)
+    else:
+        return JsonResponse({"error": "No data available"}, status=404)
+
+
+@api_view(['POST'])
+def submit_form(request):
+    data = request.data
+
+    # Save to the database
+    serializer = SensorDataSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        print("Data saved successfully:", data)  # Debugging line
+        return JsonResponse({"status": "success"}, status=201)
+    else:
+        print("Validation errors:", serializer.errors)  # Debugging line
+        return JsonResponse(serializer.errors, status=400)
+
+// b) urls.py
+from django.urls import path
+from .views import receive_sensor_data, get_latest_sensor_data, submit_form
+
+urlpatterns = [
+    path('api/sensordata', receive_sensor_data, name='receive_sensor_data'),
+    path('api/sensordata/latest', get_latest_sensor_data, name='get_latest_sensor_data'),
+    path('api/submit-form', submit_form, name='submit_form'),
+]
+
+// b) main urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('attendance.urls')),
+]
+// c) serializers.py
+from rest_framework import serializers
+from .models import SensorData
+
+class SensorDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SensorData
+        fields = ['id', 'voltage', 'current', 'watt', 'average', 'name', 'age', 'rollNumber', 'Class', 'timestamp']
+
+//d) models.py
+from django.db import models
+# Create your models here.
+class SensorData(models.Model):
+    voltage = models.FloatField()
+    current = models.FloatField()
+    watt = models.FloatField()
+    average = models.FloatField()
+    name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    rollNumber = models.IntegerField()
+    Class = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 
