@@ -1,3 +1,16 @@
+// Is project me hum esp32 se data receive kar rhe hai python django me aur python django is data ko react js ke fronted me send kar deta hai. aur react js me humare pass input fields hote hai jisme ye data readonly hote hai aur kuch data hum apni taraf se fill krte hai usme aur jaise hi hum submit button par click karte hai to data humara database me save ho jata hai
+
+//Note a) arduino me url use krenge "http://192.168.1.23:3000/api/sensordata"; jaha pass 192.168.1.23 mere system ki ip hai
+       b) python django me bhi same path use krenge hum aur apne python django ko hum same ip aur port par run krenge jaise python manage.py runserver 192.168.1.23:3000 par
+           from django.urls import path
+           from .views import receive_sensor_data, get_latest_sensor_data
+            urlpatterns = [
+                             path('api/sensordata', receive_sensor_data, name='receive_sensor_data'),
+                             path('api/sensordata/latest', get_latest_sensor_data, name='get_latest_sensor_data'),
+                           ]
+
+        c) aur react js ko hum simply npm start karke hi run krenge aur react me hum data get krne ke liye is path ka use krenge use krenge api/sensordata/latest
+
 //EXAMPLE-1 ESP32 code which sends the data
 #include <WiFi.h>
 #include <HTTPClient.h>
