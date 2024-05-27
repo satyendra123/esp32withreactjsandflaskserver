@@ -63,12 +63,451 @@ void loop() {
   delay(10000);  // Send data every 10 seconds
 }
 
-//EXAMPLE-2 python django backened
+//EXAMPLE-2 React js fronted
+//a) Esp32form.js
+import React, { useState, useEffect } from 'react';
+
+const Esp32form= () => {
+  const [sensorData, setSensorData] = useState(null);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      //const response = await fetch('http://192.168.1.23:3000/api/sensordata');
+      const response = await fetch('http://192.168.1.23:3000/api/sensordata/latest');
+      // Check for a 403 status code
+      if (response.status === 403) {
+        throw new Error('Forbidden');
+      }
+
+      const data = await response.json();
+      setSensorData(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // Fetch data initially
+  fetchData();
+
+  // Fetch data every 10 seconds
+  const intervalId = setInterval(fetchData, 10000);
+
+  // Clean up interval
+  return () => clearInterval(intervalId);
+}, []);
+
+return (
+  <div>
+    {sensorData ? (
+      <div>
+        <h2>Sensor Data</h2>
+        <p>Voltage: {sensorData.voltage}</p>
+        <p>Current: {sensorData.current}</p>
+        <p>Watt: {sensorData.watt}</p>
+        <p>Average: {sensorData.average}</p>
+      </div>
+    ) : (
+      <p>No sensor data available</p>
+    )}
+  </div>
+);
+};
+
+export default Esp32form;
+
+//b) Nav.js
+import React from 'react'
+import './Nav.css'
+
+function Nav() {
+  return (
+    <nav style={{
+      backgroundColor: 'white',
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: '0 48px',
+      boxShadow: '0 16px 8px 0 rgba(0,0,0,0.1)'
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+      }}>
+        <img src="./images/logo.jpeg" alt="Logo" width="60" />
+        <a href="#" style={{
+          textDecoration: 'none',
+          color:'#323232',
+          margin:'10px',
+        }}><h1>Houston System</h1></a>
+      </div>
+
+      <ul style={{
+        display: 'flex',
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+        gap: '10px',
+        alignItems: 'center'
+      }}>
+        <li style={{ display: 'flex', alignItems: 'center',padding:'16px 24px'  }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Home</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center',padding:'16px 24px'  }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Teachers</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center',padding:'16px 24px'  }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Holiday</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center' ,padding:'16px 24px' }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: '#323232',
+          }}>Login</a>
+        </li>
+        <li style={{ display: 'flex', alignItems: 'center', padding:'16px 24px' }}>
+          <a href="#" style={{
+            textDecoration: 'none',
+            color: 'white',
+            fontSize:17,
+            background:'dodgerblue',
+            padding:'16px 48px',
+            borderRadius:4,
+
+          }}>Talk to us</a>
+        </li>
+      </ul>
+    </nav>
+  )
+}
+
+export default Nav
+
+//c) Footer.js
+import React from 'react'
+function Footer() {
+  return (
+
+    <div className="container-fluid">
+        <footer style={{
+            backgroundColor:'#03011C',
+            padding:100,
+            display:'flex',
+            justifyContent:'space-between',
+        }}>
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Code school</h2>
+                <p style={{color:'white', width:'400px'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. dummy text of the printing and typesetting industry. </p>
+            </div>
+        
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Usefull links</h2>
+                <ul style={{color:'white', 
+                listStyle:'none',
+                padding:0, 
+                margin:0,
+                display:'flex',
+                flexDirection:'column',
+                gap:'8px'
+
+                }}>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Home</a></li>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Number</a></li>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Whatsapp</a></li>
+                    <li><a href="#" style={{textDecoration:'none', color:'white'}}>Contact us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Code school</h2>
+                <p style={{color:'white', width:'200px'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+            </div>
+
+            <div>
+                <h2 style={{ color:'#f5f5f5' , fontWeight:'500px' }}>Code school</h2>
+                <p style={{color:'white', width:'200px'}}>Lorem Ipsum is simply dummy text of the printing and typesetting industry. </p>
+            </div>
+
+       </footer>
+</div>
+  )
+}
+
+export default Footer
+
+//d) Section.js
+// TypingComponent.js
+import React from 'react';
+import { TypeAnimation } from 'react-type-animation';
+
+const Section = () => {
+  return (
+    <div>
+      <h1>Typing Animation Example</h1>
+      <TypeAnimation
+        sequence={[
+          'Hello, world!', // Types 'Hello, world!'
+          1000, // Waits 1s
+          'Hello, React!', // Deletes 'Hello, world!' and types 'Hello, React!'
+          1000, // Waits 1s
+          'Hello, Type Animation!', // Deletes 'Hello, React!' and types 'Hello, Type Animation!'
+          1000, // Waits 1s
+          'Goodbye!', // Deletes 'Hello, Type Animation!' and types 'Goodbye!'
+          1000, // Waits 1s
+        ]}
+        wrapper="span"
+        cursor={true}
+        repeat={Infinity}
+      />
+    </div>
+  );
+};
+
+export default Section;
+
+//e) index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import Nav from './Components/Nav';
+import reportWebVitals from './reportWebVitals';
+import Footer from './Components/Footer';
+import Esp32form from './Components/Esp32form';
+import Section from './Components/Section';
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App/>
+    <Nav/>
+    <Esp32form/>
+    <Section/>
+    <Footer/>
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+//EXAMPLE-3 python django backened
+
+//a) urls.py
+from django.urls import path
+from .views import receive_sensor_data, get_latest_sensor_data
+
+urlpatterns = [
+    path('api/sensordata', receive_sensor_data, name='receive_sensor_data'),
+    path('api/sensordata/latest', get_latest_sensor_data, name='get_latest_sensor_data'),
+]
+
+// b) serializers.py
+from rest_framework import serializers
+from .models import SensorData
+
+class SensorDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SensorData
+        fields = ['id', 'voltage', 'current', 'watt', 'average', 'name', 'age', 'roll', 'Class', 'timestamp']
+
+//c) models.py
+from django.db import models
+# Create your models here.
+class SensorData(models.Model):
+    voltage = models.FloatField()
+    current = models.FloatField()
+    watt = models.FloatField()
+    average = models.FloatField()
+    name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    roll = models.IntegerField()
+    Class = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+//d) views.py
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+
+# In-memory store for the latest sensor data
+latest_sensor_data = None
+
+@api_view(['POST'])
+def receive_sensor_data(request):
+    global latest_sensor_data
+    data = request.data
+    print("Received data:", data)  # Debugging line
+    latest_sensor_data = data
+    return JsonResponse({"status": "success"}, status=201)
+
+@api_view(['GET'])
+def get_latest_sensor_data(request):
+    global latest_sensor_data
+    if latest_sensor_data is not None:
+        return JsonResponse(latest_sensor_data, status=200)
+    else:
+        return JsonResponse({"error": "No data available"}, status=404)
+
+//e) settings.py
+"""
+Django settings for school project.
+
+Generated by 'django-admin startproject' using Django 5.0.2.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/5.0/topics/settings/
+
+For the full list of settings and their values, see
+https://docs.djangoproject.com/en/5.0/ref/settings/
+"""
+
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-v5@hz)&s###i!!ug-5*+g#!hf9%0vpsxuftp)^d%j5(=n2e+)3'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = ['192.168.1.23']
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'corsheaders',
+    'attendance.apps.AttendanceConfig',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+ROOT_URLCONF = 'school.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'school.wsgi.application'
 
 
+# Database
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+'''
+DATABASES = {
+    'default': {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'attendance',
+    'USER': 'root',
+    'PASSWORD': '',
+    }
+}
 
+# Password validation
+# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/5.0/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+
+STATIC_URL = 'static/'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_HEADERS=True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://192.168.1.23:3000",
+    "http://192.168.1.23:3000",  # Add any additional origins if needed
+]
+
+//f) main urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('attendance.urls')),
+]
 
 
 
