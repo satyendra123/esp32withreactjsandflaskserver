@@ -1,0 +1,246 @@
+// React js code
+//Step-1 Components/ Controlled.js
+import React from 'react';
+import axios from 'axios';
+import './Controlled.css';
+
+function App() {
+  const handleLedOn = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/led/on/');
+      console.log(response.data);
+    } catch (error) {
+      console.error("There was an error turning on the LED!", error);
+    }
+  };
+
+  const handleLedOff = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/led/off/');
+      console.log(response.data);
+    } catch (error) {
+      console.error("There was an error turning off the LED!", error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>ESP32 LED Control</h1>
+      <div className="control">
+        <button className="btn btn-primary m-2" onClick={handleLedOn}>LED On</button>
+        <button className="btn btn-danger m-2" onClick={handleLedOff}>LED Off</button>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+//Step-2 Components/ Controlled.css
+.control {
+    display: flex;
+    justify-content: center;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+
+//Step-3 App.js
+import React from 'react';
+import Controlled from './Components/Controlled'
+
+function App() {
+  return (
+    <div className="container">
+      <Controlled />
+    </div>
+  );
+}
+
+export default App;
+
+//Step-4 App.css
+.App {
+  text-align: center;
+}
+
+// backened/controlled/
+views.py
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework import status  # Import status from rest_framework
+import requests
+
+ESP32_URL = 'http://192.168.178.76'
+
+@api_view(['GET'])
+def led_on_view(request):
+    print("Received GET request for LED ON")  # Log the incoming request
+    try:
+        response = requests.post(f'{ESP32_URL}/led/on')
+        if response.status_code == 200:
+            return JsonResponse({'status': '|OPENEN%'}, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({'status': 'Failed to turn on LED'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'status': 'Failed to connect to ESP32'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def led_off_view(request):
+    print("Received GET request for LED OFF")  # Log the incoming request
+    try:
+        response = requests.post(f'{ESP32_URL}/led/off')
+        if response.status_code == 200:
+            return JsonResponse({'status': 'C'}, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({'status': 'Failed to turn off LED'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'status': 'Failed to connect to ESP32'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+//urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('led/on/', views.led_on, name='led_on'),
+    path('led/off/', views.led_off, name='led_off'),
+]
+
+//main urls.py
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('controlled.urls')),  # Include your app's URLs
+]
+
+//ESP32 code
+from machine import Pin
+from time import sleep
+import network
+import urequests as requests
+import ujson as json
+
+device_id = "Device0001"
+ssid = "Airtel_tejv_3002"
+password = "air73137"
+
+HTTPS_GET_URL = "http://192.168.1.24:8000/esp32/boom/"
+
+LED_PIN = 2  # GPIO 2 for the built-in LED
+
+def setup():
+    global led
+    led = Pin(LED_PIN, Pin.OUT)
+    setup_wifi()
+
+def loop():
+    response = HTTPS_GET(HTTPS_GET_URL)
+    if response and response.get("status") == "success":
+        led.on()
+        sleep(1)
+        led.off()
+
+    sleep(1)
+
+def setup_wifi():
+    sta_if = network.WLAN(network.STA_IF)
+    if not sta_if.isconnected():
+        print('Connecting to network...')
+        sta_if.active(True)
+        sta_if.connect(ssid, password)
+        while not sta_if.isconnected():
+            pass
+    print('Network config:', sta_if.ifconfig())
+
+def HTTPS_GET(HTTPS_GET_URL):
+    print("\nGetting from:", HTTPS_GET_URL)
+
+    print("Connecting to server...")
+    try:
+        response = requests.get(HTTPS_GET_URL)
+        if response.status_code == 200:
+            print("ServerResponse:", response.text)
+            return response.json()  # Parse and return the JSON response
+        else:
+            print("Failed to GET. Error:", response.text)
+            return None
+    except Exception as e:
+        print("Exception occurred:", e)
+        return None
+
+setup()
+while True:
+    loop()
+
+// raspberry pi pico w code
+import requests
+import json
+from time import sleep
+import RPi.GPIO as GPIO
+
+device_id = "Device0001"
+ssid = "Airtel_tejv_3002"
+password = "air73137"
+
+HTTPS_GET_URL = "http://192.168.1.24:8000/esp32/boom/"
+
+LED_PIN = 2  # GPIO 2 for the built-in LED
+
+def setup():
+    global led
+    GPIO.setmode(GPIO.BCM)  # Use Broadcom (BCM) pin numbering
+    GPIO.setup(LED_PIN, GPIO.OUT)  # Set pin as output
+    setup_wifi()
+
+def loop():
+    response = HTTPS_GET(HTTPS_GET_URL)
+    if response and response.get("status") == "success":
+        GPIO.output(LED_PIN, GPIO.HIGH)  # Turn on LED
+        sleep(1)
+        GPIO.output(LED_PIN, GPIO.LOW)  # Turn off LED
+
+    sleep(1)
+
+def setup_wifi():
+    # Assuming the Raspberry Pi is already connected to Wi-Fi
+    print(f'Connected to network {ssid}')
+
+def HTTPS_GET(HTTPS_GET_URL):
+    print("\nGetting from:", HTTPS_GET_URL)
+
+    print("Connecting to server...")
+    try:
+        response = requests.get(HTTPS_GET_URL)
+        if response.status_code == 200:
+            print("ServerResponse:", response.text)
+            return response.json()  # Parse and return the JSON response
+        else:
+            print("Failed to GET. Error:", response.text)
+            return None
+    except Exception as e:
+        print("Exception occurred:", e)
+        return None
+
+setup()
+while True:
+      loop()
+
+// flask server code for testing the esp32 is working or not
+
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route('/esp32/boom/', methods=['GET'])
+def handle_get():
+    response = {
+        "status": "success",
+        "data": "LED should toggle"
+    }
+    return jsonify(response)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8000)
