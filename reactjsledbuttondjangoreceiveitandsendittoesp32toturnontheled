@@ -3,8 +3,8 @@
 import React from 'react';
 import axios from 'axios';
 import './Controlled.css';
-function Controlled() {
 
+function Controlled() {
   const handleLedOn = async () => {
     try {
       const response = await axios.get('http://localhost:8000/api/led/on/');
@@ -34,32 +34,24 @@ function Controlled() {
   );
 }
 
-export default Controlled
-
+export default Controlled;
 
 //Step-2 Components/ Controlled.css
-.control {
-    display: flex;
-    justify-content: center;
-  }
-  
-  h1 {
-    text-align: center;
-  }
+
 
 //Step-3 App.js
-import React from 'react';
-import Controlled from './Components/Controlled'
-
+import './App.css';
+import Controlled from './Components/Controlled';
 function App() {
   return (
-    <div className="container">
-      <Controlled />
+    <div className="App">
+      <Controlled/>
     </div>
   );
 }
 
 export default App;
+
 
 //Step-4 App.css
 .App {
