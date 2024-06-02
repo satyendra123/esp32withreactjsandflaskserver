@@ -1,3 +1,12 @@
+Note- in the esp32 i need to use the mysystem ip which is 192.168.178.76:8000 because i am connecting with the wifi network. so to connect with the django python i need to
+run it with command python manage.py runserver 192.168.178.76:8000 port. and when i run the react using npm start then it will run on http://192.168.178.76:3000 port. so but in the react js
+where i have used axios get there i need to use the djangopython server running ip and port http://192.168.178.76:8000/api/led/off/ so that django will receive the data through this http  . 
+
+for example write now i have not connected with the esp32. so i am not running the my django with the system ip so my django is running on http://localhost:8000 port and my react is running
+on http://192.168.178.76:3000 port because i am connecting with the system ip because i am connecting with my wifi network. so i will use the axios.get('http://localhost:8000/api/led/on/') so in axios always remeber we will pass the django server ip and port in which django is running then only it work
+
+
+
 // React js code
 //Step-1 Components/ Controlled.js
 import React from 'react';
