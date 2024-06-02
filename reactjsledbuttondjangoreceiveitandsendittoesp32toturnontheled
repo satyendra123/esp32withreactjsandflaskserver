@@ -68,12 +68,13 @@ export default App;
 
 // backened/controlled/
 views.py
+from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework import status  # Import status from rest_framework
 import requests
 
-ESP32_URL = 'http://192.168.178.76'
+ESP32_URL = 'http://<ESP32_IP_ADDRESS>'  # Replace with the actual IP address
 
 @api_view(['GET'])
 def led_on_view(request):
@@ -99,13 +100,14 @@ def led_off_view(request):
     except requests.exceptions.RequestException as e:
         return JsonResponse({'status': 'Failed to connect to ESP32'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 //urls.py
 from django.urls import path
-from . import views
+from .views import led_on_view, led_off_view
 
 urlpatterns = [
-    path('led/on/', views.led_on, name='led_on'),
-    path('led/off/', views.led_off, name='led_off'),
+    path('led/on/', led_on_view, name='led_on_view'),
+     path('led/off/', led_off_view, name='led_off_view'),
 ]
 
 //main urls.py
@@ -114,7 +116,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('controlled.urls')),  # Include your app's URLs
+    path('api/', include('controlledweb.urls')),
 ]
 
 //ESP32 code
