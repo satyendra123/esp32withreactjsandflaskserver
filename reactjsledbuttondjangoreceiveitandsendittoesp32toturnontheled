@@ -3,8 +3,8 @@
 import React from 'react';
 import axios from 'axios';
 import './Controlled.css';
+function Controlled() {
 
-function App() {
   const handleLedOn = async () => {
     try {
       const response = await axios.get('http://localhost:8000/api/led/on/');
@@ -34,7 +34,8 @@ function App() {
   );
 }
 
-export default App;
+export default Controlled
+
 
 //Step-2 Components/ Controlled.css
 .control {
