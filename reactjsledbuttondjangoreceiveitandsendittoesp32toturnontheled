@@ -167,7 +167,51 @@ urlpatterns = [
     path('api/', include('controlledweb.urls')),
 ]
 
-//ESP32 code
+//Final Esp32 code which communicates with python django. when i click on the led on button then django will get it and send the json data to esp32. and esp32 control the led
+from machine import Pin
+import network
+import urequests as requests
+import time
+
+SSID = 'Redme10'
+PASSWORD = 'abcd1234'
+LED_PIN = 2  # GPIO 2 for the built-in LED
+
+led = Pin(LED_PIN, Pin.OUT)
+
+def connect_wifi(ssid, password):
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid, password)
+    while not wlan.isconnected():
+        pass
+    print('Network config:', wlan.ifconfig())
+
+def handle_requests():
+    while True:
+        response = None
+        try:
+            response = requests.get("http://192.168.178.76:8000/api/led/status/")  # Replace with your Django API endpoint
+            if response.status_code == 200:
+                data = response.json()
+                if data['status'] == 'on':
+                    led.on()
+                elif data['status'] == 'off':
+                    led.off()
+        except Exception as e:
+            print("Error:", e)
+        finally:
+            if response:
+                response.close()
+        time.sleep(1)
+
+# Connect to WiFi
+connect_wifi(SSID, PASSWORD)
+handle_requests()
+
+# ye humara complete fronted and backened ka code hai ki kaise hum fronted webpage se esp32 ke led ko control kar sakte hai
+/*
+//ESP32 code. this is the testing code using flask
 from machine import Pin
 from time import sleep
 import network
@@ -295,3 +339,4 @@ def handle_get():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
+*/
