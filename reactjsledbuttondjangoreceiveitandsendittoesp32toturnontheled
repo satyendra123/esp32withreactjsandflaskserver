@@ -9,14 +9,15 @@ on http://192.168.178.76:3000 port because i am connecting with the system ip be
 
 // React js code
 //Step-1 Components/ Controlled.js
-import React from 'react';
+/*
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import './Controlled.css';
 
 function Controlled() {
   const handleLedOn = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/led/on/');
+      const response = await axios.get('http://192.168.178.76:8000/api/led/on/');
       console.log(response.data);
     } catch (error) {
       console.error("There was an error turning on the LED!", error);
@@ -25,7 +26,58 @@ function Controlled() {
 
   const handleLedOff = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/led/off/');
+      const response = await axios.get('http://192.168.178.76:8000/api/led/off/');
+      console.log(response.data);
+    } catch (error) {
+      console.error("There was an error turning off the LED!", error);
+    }
+  };
+
+  useEffect(() => {
+    // Example effect that fetches the LED status once when the component mounts
+    const fetchLedStatus = async () => {
+      try {
+        const response = await axios.get('http://192.168.178.76:8000/api/led/status/');
+        console.log(response.data);
+      } catch (error) {
+        console.error("There was an error fetching the LED status!", error);
+      }
+    };
+
+    fetchLedStatus();
+  }, []); // Empty dependency array ensures this effect runs only once
+
+  return (
+    <div>
+      <h1>ESP32 LED Control</h1>
+      <div className="control">
+        <button className="btn btn-primary m-2" onClick={handleLedOn}>LED On</button>
+        <button className="btn btn-danger m-2" onClick={handleLedOff}>LED Off</button>
+      </div>
+    </div>
+  );
+}
+
+export default Controlled;
+*/
+
+import React from 'react';
+import axios from 'axios';
+import './Controlled.css';
+
+function Controlled() {
+  const handleLedOn = async () => {
+    try {
+      const response = await axios.post('http://192.168.178.76:8000/api/led/on/');
+      console.log(response.data);
+    } catch (error) {
+      console.error("There was an error turning on the LED!", error);
+    }
+  };
+
+  const handleLedOff = async () => {
+    try {
+      const response = await axios.post('http://192.168.178.76:8000/api/led/off/');
       console.log(response.data);
     } catch (error) {
       console.error("There was an error turning off the LED!", error);
@@ -46,7 +98,6 @@ function Controlled() {
 export default Controlled;
 
 //Step-2 Components/ Controlled.css
-
 
 //Step-3 App.js
 import './App.css';
@@ -127,7 +178,7 @@ import network
 import urequests as requests
 import time
 
-SSID = 'Redme10'
+SSID = 'Redmi10'
 PASSWORD = 'abcd1234'
 LED_PIN = 2  # GPIO 2 for the built-in LED
 
@@ -143,9 +194,8 @@ def connect_wifi(ssid, password):
 
 def handle_requests():
     while True:
-        response = None
         try:
-            response = requests.get("http://192.168.178.76:8000/api/led/status/")  # Replace with your Django API endpoint
+            response = requests.post("http://192.168.178.76:8000/api/led/status/")
             if response.status_code == 200:
                 data = response.json()
                 if data['status'] == 'on':
@@ -154,14 +204,12 @@ def handle_requests():
                     led.off()
         except Exception as e:
             print("Error:", e)
-        finally:
-            if response:
-                response.close()
         time.sleep(1)
 
-# Connect to WiFi
 connect_wifi(SSID, PASSWORD)
 handle_requests()
+
+
 
 # ye humara complete fronted and backened ka code hai ki kaise hum fronted webpage se esp32 ke led ko control kar sakte hai
 /*
