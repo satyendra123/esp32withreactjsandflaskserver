@@ -280,23 +280,28 @@ def connect_wifi(ssid, password):
 def handle_requests():
     while True:
         try:
-            response = requests.post("http://192.168.178.76:8000/api/led/status/") # yaha bhi hum apne system ki ip likhenge. aur ye same ip hum django me bhi run krenge. hum django ko 0.0.0.0:8000 par run kar denge
+            response = requests.post("http://192.168.178.76:8000/api/led/status/")
+            print("Response status code:", response.status_code)
             if response.status_code == 200:
                 data = response.json()
+                print("Data received:", data)
                 if data['status'] == 'on':
                     led.on()
                 elif data['status'] == 'off':
                     led.off()
+        except OSError as e:
+            print("OS Error:", e)
+            # Reconnect to Wi-Fi
+            connect_wifi(SSID, PASSWORD)
         except Exception as e:
             print("Error:", e)
+        finally:
+            if 'response' in locals():
+                response.close()
         time.sleep(1)
 
 connect_wifi(SSID, PASSWORD)
 handle_requests()
-
-
-
-
 
 # ye humara complete fronted and backened ka code hai ki kaise hum fronted webpage se esp32 ke led ko control kar sakte hai
 /*
