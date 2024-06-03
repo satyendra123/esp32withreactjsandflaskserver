@@ -144,7 +144,7 @@ def connect_wifi(ssid, password):
 def handle_requests():
     while True:
         try:
-            response = requests.post("http://192.168.178.76:8000/api/led/status/") 
+            response = requests.post("http://192.168.178.76:8000/api/led/status/") # yaha bhi hum apne system ki ip likhenge. aur ye same ip hum django me bhi run krenge. hum django ko 0.0.0.0:8000 par run kar denge
             if response.status_code == 200:
                 data = response.json()
                 if data['status'] == 'on':
@@ -157,6 +157,8 @@ def handle_requests():
 
 connect_wifi(SSID, PASSWORD)
 handle_requests()
+
+
 
 
 
