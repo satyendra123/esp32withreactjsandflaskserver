@@ -46,9 +46,6 @@ function Controlled() {
 
 export default Controlled;
 
-
-
-
 //Step-2 Components/ Controlled.css
 
 //Step-3 App.js
@@ -73,6 +70,7 @@ export default App;
 // backened/controlled/
 views.py
 '''
+# views.py
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -112,7 +110,6 @@ urlpatterns = [
     path('api/led/off/', led_off_view, name='led_off'),
     path('api/led/status/', led_status_view, name='led_status'),
 ]
-
 
 //main urls.py
 from django.contrib import admin
