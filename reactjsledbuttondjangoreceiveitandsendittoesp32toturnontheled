@@ -10,57 +10,6 @@ on http://192.168.178.76:3000 port because i am connecting with the system ip be
 // React js code
 //Step-1 Components/ Controlled.js
 /*
-import React, { useEffect } from 'react';
-import axios from 'axios';
-import './Controlled.css';
-
-function Controlled() {
-  const handleLedOn = async () => {
-    try {
-      const response = await axios.get('http://192.168.178.76:8000/api/led/on/');
-      console.log(response.data);
-    } catch (error) {
-      console.error("There was an error turning on the LED!", error);
-    }
-  };
-
-  const handleLedOff = async () => {
-    try {
-      const response = await axios.get('http://192.168.178.76:8000/api/led/off/');
-      console.log(response.data);
-    } catch (error) {
-      console.error("There was an error turning off the LED!", error);
-    }
-  };
-
-  useEffect(() => {
-    // Example effect that fetches the LED status once when the component mounts
-    const fetchLedStatus = async () => {
-      try {
-        const response = await axios.get('http://192.168.178.76:8000/api/led/status/');
-        console.log(response.data);
-      } catch (error) {
-        console.error("There was an error fetching the LED status!", error);
-      }
-    };
-
-    fetchLedStatus();
-  }, []); // Empty dependency array ensures this effect runs only once
-
-  return (
-    <div>
-      <h1>ESP32 LED Control</h1>
-      <div className="control">
-        <button className="btn btn-primary m-2" onClick={handleLedOn}>LED On</button>
-        <button className="btn btn-danger m-2" onClick={handleLedOff}>LED Off</button>
-      </div>
-    </div>
-  );
-}
-
-export default Controlled;
-*/
-
 import React from 'react';
 import axios from 'axios';
 import './Controlled.css';
@@ -68,7 +17,7 @@ import './Controlled.css';
 function Controlled() {
   const handleLedOn = async () => {
     try {
-      const response = await axios.post('http://192.168.178.76:8000/api/led/on/');
+      const response = await axios.post('http://192.168.178.76:8000/api/led/on/'); /* this is my system ip 192.168.178.76:8000 and python django server is running on 0.0.0.0:8000 hum yaha pass wo ip likhenge jisme humara django server run ho rha hai    */
       console.log(response.data);
     } catch (error) {
       console.error("There was an error turning on the LED!", error);
@@ -77,7 +26,7 @@ function Controlled() {
 
   const handleLedOff = async () => {
     try {
-      const response = await axios.post('http://192.168.178.76:8000/api/led/off/');
+      const response = await axios.post('http://192.168.178.76:8000/api/led/off/'); /* this is my system ip 192.168.178.76:8000 and python django server is running on 0.0.0.0:8000 hum yaha pass wo ip likhenge jisme humara django server run ho rha hai    */
       console.log(response.data);
     } catch (error) {
       console.error("There was an error turning off the LED!", error);
@@ -96,6 +45,9 @@ function Controlled() {
 }
 
 export default Controlled;
+
+
+
 
 //Step-2 Components/ Controlled.css
 
@@ -195,7 +147,7 @@ def connect_wifi(ssid, password):
 def handle_requests():
     while True:
         try:
-            response = requests.post("http://192.168.178.76:8000/api/led/status/")
+            response = requests.post("http://192.168.178.76:8000/api/led/status/") 
             if response.status_code == 200:
                 data = response.json()
                 if data['status'] == 'on':
