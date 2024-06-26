@@ -83,9 +83,8 @@ const Esp32form = () => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://192.168.1.23:3000/api/sensordata/latest');
+    axios.get('http://192.168.1.29:3000/api/sendsensordata')
+      .then(response => {
         const { voltage, current, watt, average } = response.data;
         setFormData(prevState => ({
           ...prevState,
@@ -94,14 +93,10 @@ const Esp32form = () => {
           watt,
           average
         }));
-      } catch (error) {
+      })
+      .catch(error => {
         console.error('Error fetching sensor data', error);
-      }
-    };
-
-    fetchData();
-    const intervalId = setInterval(fetchData, 10000);
-    return () => clearInterval(intervalId);
+      });
   }, []);
 
   const handleChange = (e) => {
@@ -112,15 +107,15 @@ const Esp32form = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Submitting form data:', formData); // Add this line
-    try {
-      const response = await axios.post('http://192.168.1.23:3000/api/submit-form', formData);
-      console.log('Data submitted successfully', response);
-    } catch (error) {
-      console.error('Error submitting data', error);
-    }
+    axios.post('http://localhost:8000/api/submit-form/', formData)
+      .then(response => {
+        console.log('Data submitted successfully', response);
+      })
+      .catch(error => {
+        console.error('Error submitting data', error);
+      });
   };
 
   return (
@@ -136,7 +131,7 @@ const Esp32form = () => {
         <input type="text" id="rollNumber" name="rollNumber" value={formData.rollNumber} onChange={handleChange} placeholder="Roll Number" required />
 
         <label htmlFor="class">Class</label>
-        <input type="text" id="class" name="Class" value={formData.Class} onChange={handleChange} placeholder="Class" required />
+        <input type="text" id="class" name="class" value={formData.class} onChange={handleChange} placeholder="Class" required />
 
         <label htmlFor="voltage">Voltage</label>
         <input type="text" id="voltage" name="voltage" value={formData.voltage} onChange={handleChange} placeholder="Voltage" readOnly />
@@ -157,6 +152,7 @@ const Esp32form = () => {
 };
 
 export default Esp32form;
+
 
 //b) Footer.js
 import React from 'react'
